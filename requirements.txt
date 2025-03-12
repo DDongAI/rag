@@ -7,3 +7,4 @@ cuda=12.4
 accelerate=0.26.0
 unstructured=0.16.25
 modelscope=1.23.2
+chromadb=0.6.3
