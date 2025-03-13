@@ -39,7 +39,8 @@ pipe = pipeline(
     max_length=10000,
     top_p=1,
     repetition_penalty=1.15,
-    truncation=True
+    truncation=True,
+    temperature=0.2,
 )
 llm = HuggingFacePipeline(pipeline=pipe)
 
@@ -53,7 +54,7 @@ loader = DirectoryLoader("data", glob="**/*", use_multithreading=True,show_progr
 docs = loader.load()
 print("file：", len(docs))
 
-splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
 
 # 长文本切割
 doc = splitter.split_documents(docs)
@@ -71,16 +72,18 @@ vectorstore = Chroma.from_documents(doc, ebd_model, persist_directory=db_dir)
 vectorstore.persist()
 print("保存完成！")
 
+# 是否可以切更小的块但是多匹配几个？？？？
 retriever = vectorstore.as_retriever(search_type="similarity", search_kwargs={"k": 1},)
 
 # 创建一个问题的模板
 system_prompt = """你是一个很有用的助手，能根据文档的内容和历史对话记录回答用户提的问题。\n
+回答问题时，不要补全用户问题，回答要精简概括，控制在50字以内\n
 {context}
 """
 prompt = ChatPromptTemplate.from_messages(  # 提问和回答的 历史记录  模板
     [
         ("system", system_prompt),
-        # MessagesPlaceholder("chat_history"),
+        MessagesPlaceholder("chat_history"),
         ("human", "{input}"),
     ]
 )
@@ -102,8 +105,11 @@ chain2 = create_retrieval_chain(retriever, chain1)
 #
 # print(resp['answer'])
 
+
+
 from fastapi import FastAPI
 from pydantic import BaseModel
+from typing import List, Tuple
 
 
 app = FastAPI(
@@ -124,18 +130,38 @@ app.add_middleware(
 post请求，地址：localhost:8000/chain/invoke
 请求参数：
     {
-    'input': "我是谁",
+    'input': "今天天气怎么样",
     "chat_history": [
         ("human", "你好，我是鲁滨孙"),
         ("ai", "你好，有什么可以帮您的")
     ]
 }
 """
+"""历史消息参数示例
+{
+  "input": {
+    "input": "我刚刚问了什么",
+    "chat_history": [
+      ["human", "你好，我是鲁滨孙"],
+      ["ai", "你好，有什么可以帮您的"],
+      ["human", "你好，我是鲁滨孙"],
+      ["ai", "你好，有什么可以帮您的"]
+    ]
+  },
+  "config": {},
+  "kwargs": {}
+}
+"""
+
+class ChatInput(BaseModel):
+    input: str
+    chat_history: List[Tuple[str, str]]  # 使用元组表示聊天历史
+
 add_routes(
     app,
     chain2,
     path="/chain2",
-    input_type=dict
+    input_type=ChatInput
 )
 
 # 服务入口函数

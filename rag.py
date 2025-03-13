@@ -8,7 +8,7 @@ from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.llms.huggingface_pipeline import HuggingFacePipeline
 from langchain_community.vectorstores import Chroma
 from langchain_core.globals import set_debug
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langserve import add_routes
 from starlette.middleware.cors import CORSMiddleware
@@ -68,6 +68,7 @@ system_prompt = """你是一个很有用的助手，能根据文档的内容和�
 prompt = ChatPromptTemplate.from_messages(
     [
         ("system", system_prompt),
+        MessagesPlaceholder("chat_history"),
         ("human", "{input}"),
     ]
 )
@@ -102,4 +103,4 @@ add_routes(
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="localhost", port=8000)
+    uvicorn.run(app, host="localhost", port=50002)
