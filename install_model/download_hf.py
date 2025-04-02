@@ -10,4 +10,5 @@ from modelscope import snapshot_download
 # model_dir = snapshot_download('deepseek-ai/DeepSeek-R1-Distill-Llama-70B', cache_dir='/mnt/model')
 # model_dir = snapshot_download('Qwen/QwQ-32B', cache_dir='/mnt/model')
 # model_dir = snapshot_download('BAAI/bge-reranker-large', cache_dir='/mnt/model')
+# model_dir = snapshot_download('BAAI/bge-reranker-v2-m3', cache_dir='/mnt/model')
 model_dir = snapshot_download('maidalun/bce-embedding-base_v1', cache_dir='/mnt/model')

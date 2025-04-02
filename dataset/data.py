@@ -38,12 +38,12 @@ path = r'E:\code\GitWork\DDongAI\rag\dataset\old'
 
 file_name = os.listdir(path)
 # 列出目录中的所有文件和文件夹名称
-# for name in os.listdir(path):
-#     print(name)
-#     file_name.append(name)
+for name in os.listdir(path):
+    print(name)
+    file_name.append(name)
 
-# print(file_name)
-# print(type(file_name))
+print(file_name)
+print(type(file_name))
 
 filename = []
 
