@@ -11,7 +11,7 @@ import streamlit as st
 
 # 这段代码定义了一个名为 vision_page 的函数，并设置了页面标题和描述，解释了 GPT-4o 的功能及其当前的限制。
 def vision_page():
-    st.title("OCR识别")
+    st.title("图片识别助手")
     if "base_url" not in st.session_state:
         # st.session_state['base_url'] = os.getenv('OPENAI_BASE_URL')
         st.session_state['base_url'] = "http://175.6.13.6:50008/v1"
